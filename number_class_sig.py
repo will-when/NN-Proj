@@ -92,4 +92,24 @@ def update_params():
     b2 = b2 - alpha * db2
     return w1 b1 w2 b2
 
+# Function which gets the predictions from our model
+def get_predictions(a2):
+    return np.argmax(a2, 0)
 
+# this functions determines the accuracy of our predicitons
+def get_accuracy(predictions, y):
+    print(predictions, Y)
+    return np.sum(predictions == y) / y.size # sum of the predictions over the number of examples there are
+
+# Now we can train the neural network using gradient descent
+def gradient_descent(iterations, x, y, alpha):
+    w1, b1, w2, b2 = inti_params()
+    for i in range(iterations):
+        z1, a1, z2, a2 = forward_prop(w1, b1, w2, b2)
+        dw1, db1, dw2, db2 = back_prop(z1, a1, z2, a2)
+        w1, b1, w2, b2 = update_params(w1, b1, w2, b2, dw1, db1, dw2, db2, alpha)
+        if (i % 10 == 0):
+            print("Iteration: ", i)
+            print("Aaccuracy: ", get_accuracy(get_predictions(a2), y))
+    return w1, b1, w2, b2
+    
