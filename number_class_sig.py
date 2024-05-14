@@ -102,7 +102,7 @@ def get_accuracy(predictions, y):
     return np.sum(predictions == y) / y.size # sum of the predictions over the number of examples there are
 
 # Now we can train the neural network using gradient descent
-def gradient_descent(iterations, x, y, alpha):
+def gradient_descent(x, y, iterations, alpha):
     w1, b1, w2, b2 = inti_params()
     for i in range(iterations):
         z1, a1, z2, a2 = forward_prop(w1, b1, w2, b2)
@@ -112,4 +112,5 @@ def gradient_descent(iterations, x, y, alpha):
             print("Iteration: ", i)
             print("Aaccuracy: ", get_accuracy(get_predictions(a2), y))
     return w1, b1, w2, b2
-    
+
+w1, b1, w2, b2 = gradient_descent(X_train, Y_train, 500, 0.1) 
