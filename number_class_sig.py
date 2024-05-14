@@ -68,11 +68,18 @@ def deriv_sigmoid(z):
 # One hot coding is the conversion of categorical information into a format that may be fed into machine learning algorithms to improve prediction accuracy
 # This takes a a category and represent it in a one-hot way which is powerful when dealing with data that is non-numerical especially.
 def one_hot(y):
-    one_hot_Y = np.zero((y.size), y.max(() + 1))
-    one_hot_Y[np.arange(y.size), y] = 1
-    one_hot_Y = one_hot_Y.T
+    one_hot_Y = np.zero((y.size), y.max(() + 1)) # Creates an array of zeros. the size is defined by y.size (which is m - number of rows) and y.max + 1 assumes 9 classes and add 1 to get 10 which is the desired number of outputs (1-10)
+    one_hot_Y[np.arange(y.size), y] = 1 # index through the one_hot_Y using arrays from 0 to m (y.size) and y is specifying the column it accesses (so essentiall going to each row and accessing the label column and seting it to 1)
+    one_hot_Y = one_hot_Y.T # transposing the array so all labels are in a row 
     return one_hot_Y
 
 # Backwards propogation - essentially allows model to determine the error in previous iteration so it can improve accuracy of classificaion
 def back_prop(z1, a1, z2, a2, x, y):
-    
+    m = y.size
+    dz2 = a2 - one_hot_Y(y)
+    dw2 = (1/m) * dz2.dot(a1.T)
+    db2 = (1/m) * np.sum(dz2)
+    dz1 = w2.dot(dz2) * sigmoid(z1)
+    dw1 = (1/m) * dz1.dot(x.T)
+    db1 = (1/m) * np.sum(dz1)
+    return dw2 db2 dw1 db1
