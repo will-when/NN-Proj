@@ -83,3 +83,13 @@ def back_prop(z1, a1, z2, a2, x, y):
     dw1 = (1/m) * dz1.dot(x.T)
     db1 = (1/m) * np.sum(dz1)
     return dw2 db2 dw1 db1
+
+# Now using the back propogation we are going to update teh weighting and also bias
+def update_params():
+    w1 = w1 - alpha * dw1
+    b1 = b1 - alpha * db1
+    w2 = w2 - alpha * dw2
+    b2 = b2 - alpha * db2
+    return w1 b1 w2 b2
+
+
