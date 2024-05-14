@@ -41,5 +41,22 @@ def inti_params():
     b1 = np.random.randn(10, 1)
     w2 = np.random.randn(10, 784)
     b2 = np.random.randn(10, 1)
-    return w1 w2 b1 b2
-    
+    return w1 b1 w2 b2
+
+# activation function for hidden layer
+# activation function introduce non-linearity
+def sigmoid(z):
+    return 1/(1 + np.exp(z))
+
+# activation function for output
+# if this was not present the output would be a linear function of the output (can't get anything meaningful out of large complex datasets)
+def softmax(z):
+    return np.exp(z) / np.sum(exp(z))
+
+# Forward propogation - moves from input to output (single forward direction)
+def forward_prop(w1, b1, w2, b2, X):
+    z1 = w1.dot(X) + b1
+    a1 = sigmoid(z1)
+    z2 = w2.dot(a1) + b2
+    a2 = softmax(z2)
+    return z1 a1 z2 a2
