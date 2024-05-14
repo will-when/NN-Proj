@@ -26,8 +26,20 @@ np.random.shuffle(data)
 data_dev = data[0:1000].T
 Y_dev = data_dev[0] # This captures the first row which is the labels
 X_dev = data_dev[1:n] # This captures the pixel data - everything apart from the first row
+#print(Y_dev)
 
 # Captures the rest of the data after the first 1000 rows then transposes it so each column is a number
 data_train = data[1000:m].T
 Y_train = data_train[0] # This captures the first row which is the labels
 X_train = data_train[1:n] # This captures the pixel data - everything apart from the first row
+#print(Y_train)
+#print(Y_dev[:, 0].shape)
+
+# Create a function to initialize parameters
+def inti_params():
+    w1 = np.random.randn(10, 784) # np.random.randn creates a matrices of specified size with random numbers between -0.5 and 0.5
+    b1 = np.random.randn(10, 1)
+    w2 = np.random.randn(10, 784)
+    b2 = np.random.randn(10, 1)
+    return w1 w2 b1 b2
+    
