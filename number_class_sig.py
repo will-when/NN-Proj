@@ -46,7 +46,7 @@ def inti_params():
 # activation function for hidden layer
 # activation function introduce non-linearity
 def sigmoid(z):
-    return 1/(1 + np.exp(z))
+    return 1/(1 + np.exp(-z))
 
 # activation function for output
 # if this was not present the output would be a linear function of the output (can't get anything meaningful out of large complex datasets)
@@ -60,3 +60,19 @@ def forward_prop(w1, b1, w2, b2, X):
     z2 = w2.dot(a1) + b2
     a2 = softmax(z2)
     return z1 a1 z2 a2
+
+# Calculate the derivative of the sigmoid function for use in the back propogation task
+def deriv_sigmoid(z):
+    return z * (1 - z)
+
+# One hot coding is the conversion of categorical information into a format that may be fed into machine learning algorithms to improve prediction accuracy
+# This takes a a category and represent it in a one-hot way which is powerful when dealing with data that is non-numerical especially.
+def one_hot(y):
+    one_hot_Y = np.zero((y.size), y.max(() + 1))
+    one_hot_Y[np.arange(y.size), y] = 1
+    one_hot_Y = one_hot_Y.T
+    return one_hot_Y
+
+# Backwards propogation - essentially allows model to determine the error in previous iteration so it can improve accuracy of classificaion
+def back_prop(z1, a1, z2, a2, x, y):
+    
