@@ -38,28 +38,28 @@ X_train = data_train[1:n] # This captures the pixel data - everything apart from
 # Create a function to initialize parameters
 def inti_params():
     w1 = np.random.randn(10, 784) # np.random.randn creates a matrices of specified size with random numbers between -0.5 and 0.5
-    b1 = np.random.randn(10, 1)
-    w2 = np.random.randn(10, 784)
-    b2 = np.random.randn(10, 1)
-    return w1 b1 w2 b2
+    b1 = np.random.randn(10, 1) 
+    w2 = np.random.randn(10, 10) 
+    b2 = np.random.randn(10, 1) 
+    return w1, b1, w2, b2
 
 # activation function for hidden layer
 # activation function introduce non-linearity
 def sigmoid(z):
-    return 1/(1 + np.exp(-z))
+    return 1 / (1 + np.exp(-z))
 
 # activation function for output
 # if this was not present the output would be a linear function of the output (can't get anything meaningful out of large complex datasets)
 def softmax(z):
-    return np.exp(z) / np.sum(exp(z))
+    return np.exp(z) / np.sum(np.exp(z))
 
 # Forward propogation - moves from input to output (single forward direction)
-def forward_prop(w1, b1, w2, b2, X):
-    z1 = w1.dot(X) + b1
+def forward_prop(w1, b1, w2, b2, x):
+    z1 = w1.dot(x) + b1
     a1 = sigmoid(z1)
     z2 = w2.dot(a1) + b2
     a2 = softmax(z2)
-    return z1 a1 z2 a2
+    return z1, a1, z2, a2
 
 # Calculate the derivative of the sigmoid function for use in the back propogation task
 def deriv_sigmoid(z):
@@ -68,29 +68,29 @@ def deriv_sigmoid(z):
 # One hot coding is the conversion of categorical information into a format that may be fed into machine learning algorithms to improve prediction accuracy
 # This takes a a category and represent it in a one-hot way which is powerful when dealing with data that is non-numerical especially.
 def one_hot(y):
-    one_hot_Y = np.zero((y.size), y.max(() + 1)) # Creates an array of zeros. the size is defined by y.size (which is m - number of rows) and y.max + 1 assumes 9 classes and add 1 to get 10 which is the desired number of outputs (1-10)
-    one_hot_Y[np.arange(y.size), y] = 1 # index through the one_hot_Y using arrays from 0 to m (y.size) and y is specifying the column it accesses (so essentiall going to each row and accessing the label column and seting it to 1)
+    one_hot_Y = np.zeros((y.size), y.max() + 1) # Creates an array of zeros. the size is defined by y.size (which is m - number of rows) and y.max + 1 assumes 9 classes and add 1 to get 10 which is the desired number of outputs (1-10)
+    one_hot_Y[np.arange(y.size)] = 1 # index through the one_hot_Y using arrays from 0 to m (y.size) and y is specifying the column it accesses (so essentiall going to each row and accessing the label column and seting it to 1)
     one_hot_Y = one_hot_Y.T # transposing the array so all labels are in a row 
     return one_hot_Y
 
 # Backwards propogation - essentially allows model to determine the error in previous iteration so it can improve accuracy of classificaion
-def back_prop(z1, a1, z2, a2, x, y):
-    m = y.size
-    dz2 = a2 - one_hot_Y(y)
-    dw2 = (1/m) * dz2.dot(a1.T)
-    db2 = (1/m) * np.sum(dz2)
-    dz1 = w2.dot(dz2) * sigmoid(z1)
-    dw1 = (1/m) * dz1.dot(x.T)
-    db1 = (1/m) * np.sum(dz1)
-    return dw2 db2 dw1 db1
+def backward_prop(z1, a1, z2, a2, w1, w2, x, y):
+    one_hot_Y = one_hot(y)
+    dz2 = a2 - one_hot_Y
+    dw2 = 1 / m * dz2.dot(a1.T)
+    db2 = 1 / m * np.sum(dz2, axis=1, keepdims=True)
+    dz1 = w2.T.dot(dz2) * sigmoid(z1)
+    dw1 = 1 / m * dz1.dot(x.T)
+    db1 = 1 / m * np.sum(dz1, axis=1, keepdims=True)
+    return dw1, db1, dw2, db2
 
-# Now using the back propogation we are going to update teh weighting and also bias
-def update_params():
+# Now using the back propogation we are going to update the weighting and also bias
+def update_params(w1, b1, w2, b2, dw1, db1, dw2, db2, alpha):
     w1 = w1 - alpha * dw1
-    b1 = b1 - alpha * db1
-    w2 = w2 - alpha * dw2
-    b2 = b2 - alpha * db2
-    return w1 b1 w2 b2
+    b1 = b1 - alpha * db1    
+    w2 = w2 - alpha * dw2  
+    b2 = b2 - alpha * db2    
+    return w1, b1, w2, b2
 
 # Function which gets the predictions from our model
 def get_predictions(a2):
@@ -98,19 +98,20 @@ def get_predictions(a2):
 
 # this functions determines the accuracy of our predicitons
 def get_accuracy(predictions, y):
-    print(predictions, Y)
+    print(predictions, y)
     return np.sum(predictions == y) / y.size # sum of the predictions over the number of examples there are
 
 # Now we can train the neural network using gradient descent
 def gradient_descent(x, y, iterations, alpha):
     w1, b1, w2, b2 = inti_params()
     for i in range(iterations):
-        z1, a1, z2, a2 = forward_prop(w1, b1, w2, b2)
-        dw1, db1, dw2, db2 = back_prop(z1, a1, z2, a2)
+        z1, a1, z2, a2 = forward_prop(w1, b1, w2, b2, x)
+        dw1, db1, dw2, db2 = backward_prop(z1, a1, z2, a2, w1, w2, x, y)
         w1, b1, w2, b2 = update_params(w1, b1, w2, b2, dw1, db1, dw2, db2, alpha)
-        if (i % 10 == 0):
+        if (i % 100 == 0):
             print("Iteration: ", i)
-            print("Aaccuracy: ", get_accuracy(get_predictions(a2), y))
+            predictions = get_predictions(a2)
+            print("Accuracy: ", get_accuracy(predictions, y))
     return w1, b1, w2, b2
 
-w1, b1, w2, b2 = gradient_descent(X_train, Y_train, 500, 0.1) 
+w1, b1, w2, b2 = gradient_descent(X_train, Y_train, 1000, 0.1)
